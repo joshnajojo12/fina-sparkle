@@ -1,0 +1,51 @@
+“I have an existing React + Tailwind app with a Professional dashboard already built. I want to add a Student dashboard that is colorful, simple, and consistent with my current design.
+
+The Student dashboard should integrate with my existing backend (Express + SQLite) running on Replit, which exposes these endpoints:
+
+GET /wallet/1 → returns { balance_rupees }
+
+POST /wallet/1/pay → accepts { to, amount_rupees, type } and returns updated balance
+
+GET /wallet/1/transactions → returns transaction history
+
+The Student dashboard should have these features:
+
+Wallet Balance: Show current wallet balance fetched from backend
+
+Add Expenses / Transfer Money: Form to send payments to a friend; updates balance and backend transactions
+
+Transaction History: Display a table or cards with all transactions fetched from backend
+
+Savings Goals: Show goals with progress bars
+
+Notifications / Scam Alerts: Placeholder section for messages like ‘⚠️ Fake internship detected’
+
+Fun / Gamification elements: Badges for saving or spending wisely
+
+Requirements:
+
+Maintain the same design language and Tailwind styling as the existing Professional dashboard
+
+Make it colorful, clean, and student-friendly
+
+All API calls should point to the Replit backend (https://<your-replit>.repl.co)
+
+Show real-time balance updates after transactions
+
+Keep sandbox mode — no real money is moved
+
+Include responsive design for desktop and mobile
+
+Output: Please generate the full StudentDashboard.tsx React component code with Tailwind classes and all Axios calls integrated to the backend.”
+
+✅ How to use
+
+Replace <your-replit> with your Replit project’s public URL.
+
+Paste this prompt into ChatGPT (or Replit AI) and ask it to generate the code.
+
+Copy the generated StudentDashboard.tsx into your src/components/dashboard/ folder.
+
+Import it into your role-selection flow so that choosing Student loads this new dashboard.
+
+Test — you should now see wallet balance, send dummy payments, and view transactions, all in a student-friendly UI
