@@ -5,7 +5,7 @@ interface StatsCardProps {
   title: string;
   value: string;
   change?: string;
-  changeType?: "positive" | "negative" | "neutral";
+  changeType?: "positive" | "negative" | "neutral" | "warning";
   icon: LucideIcon;
   gradient?: boolean;
 }
@@ -17,6 +17,8 @@ const StatsCard = ({ title, value, change, changeType = "neutral", icon: Icon, g
         return "text-success";
       case "negative":
         return "text-destructive";
+      case "warning":
+        return "text-warning";
       default:
         return "text-muted-foreground";
     }

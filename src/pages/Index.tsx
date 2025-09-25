@@ -2,8 +2,6 @@ import { Wallet, TrendingUp, Target, PiggyBank, CreditCard, AlertTriangle } from
 import Navbar from "@/components/layout/Navbar";
 import StatsCard from "@/components/dashboard/StatsCard";
 import ExpenseChart from "@/components/dashboard/ExpenseChart";
-import SavingsGoals from "@/components/dashboard/SavingsGoals";
-import NotificationPanel from "@/components/dashboard/NotificationPanel";
 import QuickActions from "@/components/dashboard/QuickActions";
 import RecentTransactions from "@/components/dashboard/RecentTransactions";
 
@@ -58,21 +56,15 @@ const Index = () => {
 
           {/* Main Content Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-            {/* Left Column - Charts and Goals */}
+            {/* Left Column - Charts */}
             <div className="lg:col-span-2 space-y-8">
               <div className="animate-scale-in">
                 <ExpenseChart />
               </div>
-              <div className="animate-scale-in">
-                <SavingsGoals />
-              </div>
             </div>
 
-            {/* Right Column - Notifications and Actions */}
+            {/* Right Column - Quick Actions */}
             <div className="space-y-8">
-              <div className="animate-scale-in">
-                <NotificationPanel />
-              </div>
               <div className="animate-scale-in">
                 <QuickActions />
               </div>

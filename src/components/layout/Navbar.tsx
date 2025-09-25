@@ -1,8 +1,13 @@
 import { Bell, Menu, User, Wallet, TrendingUp, Target, Shield, Calculator } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Link, useLocation } from "react-router-dom";
 
 const Navbar = () => {
+  const location = useLocation();
+  
+  const isActive = (path: string) => location.pathname === path;
+  
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass-card border-b backdrop-blur-xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -19,33 +24,43 @@ const Navbar = () => {
 
           {/* Navigation Links */}
           <div className="hidden md:flex items-center space-x-8">
-            <Button variant="ghost" className="text-foreground hover:text-primary transition-colors">
-              <TrendingUp className="w-4 h-4 mr-2" />
-              Dashboard
-            </Button>
-            <Button variant="ghost" className="text-foreground hover:text-primary transition-colors">
-              <Target className="w-4 h-4 mr-2" />
-              Goals
-            </Button>
-            <Button variant="ghost" className="text-foreground hover:text-primary transition-colors">
-              <Calculator className="w-4 h-4 mr-2" />
-              EMI Tracker
-            </Button>
-            <Button variant="ghost" className="text-foreground hover:text-primary transition-colors">
-              <Shield className="w-4 h-4 mr-2" />
-              Fraud Detection
-            </Button>
+            <Link to="/">
+              <Button variant="ghost" className={`text-foreground hover:text-primary transition-colors ${isActive('/') ? 'bg-primary/10 text-primary' : ''}`}>
+                <TrendingUp className="w-4 h-4 mr-2" />
+                Dashboard
+              </Button>
+            </Link>
+            <Link to="/savings">
+              <Button variant="ghost" className={`text-foreground hover:text-primary transition-colors ${isActive('/savings') ? 'bg-primary/10 text-primary' : ''}`}>
+                <Target className="w-4 h-4 mr-2" />
+                Savings
+              </Button>
+            </Link>
+            <Link to="/bills">
+              <Button variant="ghost" className={`text-foreground hover:text-primary transition-colors ${isActive('/bills') ? 'bg-primary/10 text-primary' : ''}`}>
+                <Calculator className="w-4 h-4 mr-2" />
+                Bills
+              </Button>
+            </Link>
+            <Link to="/budget">
+              <Button variant="ghost" className={`text-foreground hover:text-primary transition-colors ${isActive('/budget') ? 'bg-primary/10 text-primary' : ''}`}>
+                <Shield className="w-4 h-4 mr-2" />
+                Budget
+              </Button>
+            </Link>
           </div>
 
           {/* Right Side */}
           <div className="flex items-center space-x-4">
             {/* Notifications */}
-            <Button variant="ghost" size="icon" className="relative">
-              <Bell className="w-5 h-5" />
-              <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-destructive text-destructive-foreground text-xs notification-badge">
-                3
-              </Badge>
-            </Button>
+            <Link to="/notifications">
+              <Button variant="ghost" size="icon" className={`relative ${isActive('/notifications') ? 'bg-primary/10 text-primary' : ''}`}>
+                <Bell className="w-5 h-5" />
+                <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-destructive text-destructive-foreground text-xs notification-badge">
+                  3
+                </Badge>
+              </Button>
+            </Link>
 
             {/* Profile */}
             <Button variant="ghost" size="icon">
