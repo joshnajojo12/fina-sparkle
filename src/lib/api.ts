@@ -56,6 +56,27 @@ export interface PaymentResponse {
   message: string;
 }
 
+export interface ExpenseRequest {
+  description: string;
+  amount_rupees: number;
+  category?: string;
+  sandbox?: boolean;
+}
+
+export interface ExpenseResponse {
+  success: boolean;
+  transaction_id: number;
+  description: string;
+  amount_rupees: number;
+  amount_paise: number;
+  category: string;
+  new_balance_rupees: number;
+  new_balance_paise: number;
+  is_sandbox: boolean;
+  timestamp: string;
+  message: string;
+}
+
 // API functions
 export const api = {
   // Get wallet balance and details
@@ -83,6 +104,43 @@ export const api = {
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.error || 'Payment failed');
+    }
+    
+    return response.json();
+  },
+
+  // Add personal expense (Bali trip, laptop, bills, etc.)
+  async addExpense(expense: ExpenseRequest): Promise<ExpenseResponse> {
+    const response = await fetch(`${API_BASE_URL}/wallet/1/expense`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...expense,
+        sandbox: true, // Keep it in sandbox mode
+      }),
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to add expense');
+    }
+    
+    return response.json();
+  },
+
+  // Reset wallet to ₹1,00,000
+  async resetWallet(): Promise<{ success: boolean; message: string; balance_rupees: number }> {
+    const response = await fetch(`${API_BASE_URL}/wallet/1/reset`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to reset wallet');
     }
     
     return response.json();

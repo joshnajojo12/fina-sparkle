@@ -290,6 +290,127 @@ app.get('/health', (req, res) => {
   });
 });
 
+// POST /wallet/1/reset - Reset wallet to ₹1,00,000
+app.post('/wallet/:id/reset', async (req, res) => {
+  try {
+    const walletId = parseInt(req.params.id);
+    
+    // Reset wallet balance to ₹100,000 (10,000,000 paise)
+    await db.run(
+      'UPDATE wallets SET balance_paise = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+      [10000000, walletId]
+    );
+    
+    const wallet = await db.get(`
+      SELECT w.*, u.name as user_name, u.phone 
+      FROM wallets w 
+      JOIN users u ON w.user_id = u.id 
+      WHERE w.id = ?
+    `, [walletId]);
+
+    res.json({
+      success: true,
+      message: 'Wallet reset to ₹1,00,000',
+      wallet_id: wallet.id,
+      user_name: wallet.user_name,
+      balance_rupees: paiseToRupees(wallet.balance_paise),
+      balance_paise: wallet.balance_paise,
+      updated_at: wallet.updated_at
+    });
+
+  } catch (error) {
+    console.error('Error resetting wallet:', error);
+    res.status(500).json({ error: 'Failed to reset wallet' });
+  }
+});
+
+// POST /wallet/1/expense - Add personal expense (Bali trip, laptop, bills, etc.)
+app.post('/wallet/:id/expense', async (req, res) => {
+  try {
+    const walletId = parseInt(req.params.id);
+    const { description, amount_rupees, category = 'expense', sandbox = true } = req.body;
+
+    // Validation
+    if (!description || !amount_rupees) {
+      return res.status(400).json({ 
+        error: 'Missing required fields: description, amount_rupees' 
+      });
+    }
+
+    if (amount_rupees <= 0) {
+      return res.status(400).json({ 
+        error: 'Amount must be positive' 
+      });
+    }
+
+    const amountPaise = rupeesToPaise(amount_rupees);
+
+    // Get current wallet balance
+    const wallet = await db.get('SELECT balance_paise FROM wallets WHERE id = ?', [walletId]);
+    
+    if (!wallet) {
+      return res.status(404).json({ error: 'Wallet not found' });
+    }
+
+    if (wallet.balance_paise < amountPaise) {
+      return res.status(400).json({ 
+        error: 'Insufficient balance',
+        current_balance_rupees: paiseToRupees(wallet.balance_paise),
+        required_amount_rupees: amount_rupees
+      });
+    }
+
+    // Start transaction
+    await db.run('BEGIN TRANSACTION');
+
+    try {
+      // Deduct amount from wallet
+      const newBalance = wallet.balance_paise - amountPaise;
+      await db.run(
+        'UPDATE wallets SET balance_paise = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+        [newBalance, walletId]
+      );
+
+      // Record expense transaction
+      const result = await db.run(`
+        INSERT INTO transactions (wallet_id, to_identifier, amount_paise, transaction_type, is_sandbox, description)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `, [
+        walletId,
+        'Personal Expense',
+        amountPaise,
+        category,
+        sandbox ? 1 : 0,
+        description
+      ]);
+
+      await db.run('COMMIT');
+
+      res.json({
+        success: true,
+        transaction_id: result.lastID,
+        description: description,
+        amount_rupees: amount_rupees,
+        amount_paise: amountPaise,
+        category: category,
+        new_balance_rupees: paiseToRupees(newBalance),
+        new_balance_paise: newBalance,
+        is_sandbox: sandbox,
+        timestamp: new Date().toISOString(),
+        message: `Expense added: ${description}`
+      });
+
+    } catch (transactionError) {
+      await db.run('ROLLBACK');
+      throw transactionError;
+    }
+
+  } catch (error) {
+    console.error('Error adding expense:', error);
+    res.status(500).json({ error: 'Failed to add expense' });
+  }
+});
+
 // Start server
 async function startServer() {
   await initializeDatabase();
