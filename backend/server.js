@@ -294,7 +294,7 @@ app.get('/health', (req, res) => {
 async function startServer() {
   await initializeDatabase();
   
-  app.listen(PORT, '0.0.0.0', () => {
+  app.listen(PORT, 'localhost', () => {
     console.log(`🚀 FinanceAI Backend Server running on port ${PORT}`);
     console.log(`📊 Database: SQLite (db.sqlite)`);
     console.log(`💰 Demo wallet seeded with ₹100,000 (sandbox mode)`);
